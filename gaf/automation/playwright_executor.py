@@ -85,12 +85,21 @@ class PlaywrightAmazonExecutor:
                     max_retries = step.get('retries', 2)  # Default 2 retries
                     
                     last_error = None
+                    response_code = None
+                    
                     for attempt in range(max_retries):
                         try:
                             logger.info(f"Attempting to navigate to {url} (attempt {attempt + 1}/{max_retries})")
-                            await self.page.goto(url, wait_until=wait_until, timeout=timeout)
+                            response = await self.page.goto(url, wait_until=wait_until, timeout=timeout)
+                            
+                            # Capture response code
+                            if response:
+                                response_code = response.status
+                            
                             result['status'] = 'passed'
                             result['message'] = f"Navigated to {url} (attempt {attempt + 1})"
+                            result['response_code'] = response_code
+                            result['response_status'] = 'OK' if response_code and 200 <= response_code < 300 else 'ERROR'
                             break  # Success, exit retry loop
                         except Exception as e:
                             last_error = e
@@ -102,6 +111,7 @@ class PlaywrightAmazonExecutor:
                                 result['status'] = 'failed'
                                 result['error'] = str(last_error)
                                 result['message'] = f"Failed to navigate to {url} after {max_retries} attempts: {str(last_error)}"
+                                result['response_code'] = response_code
                                 raise last_error  # Re-raise to stop scenario execution
                     
             # When steps

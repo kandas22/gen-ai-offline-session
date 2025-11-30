@@ -14,6 +14,7 @@ from automation.google_search import perform_google_search
 from bdd_engine.generator import generate_bdd_test
 from bdd_engine.executor import execute_bdd_test
 from bdd_engine.auto_fixer import auto_fix_test
+from database.service import DatabaseService
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -540,23 +541,58 @@ def _execute_bdd_async(task_id: str, test_id: str, feature_file: str):
 def _execute_playwright_async(task_id: str, specification: Dict[str, Any]):
     """Execute Playwright test in background"""
     try:
+        # Update task status to running
         task_manager.update_task_status(task_id, TaskStatus.RUNNING)
         
+        # Save to database - initial state
+        feature = specification.get('feature', {})
+        feature_name = feature.get('name', 'Unknown Test')
+        test_id = task_id[:8]  # Use first 8 chars of task_id as test_id
+        
+        DatabaseService.save_test_execution(
+            task_id=task_id,
+            test_id=test_id,
+            feature_name=feature_name,
+            specification=specification,
+            configuration=specification.get('configuration', {})
+        )
+        
+        # Update database status to running
+        DatabaseService.update_test_status(task_id, 'running')
+        
+        # Execute test
         from automation.playwright_executor import execute_amazon_test
         
         results = execute_amazon_test(specification)
         
+        # Update task manager
         task_manager.update_task_status(
             task_id,
             TaskStatus.COMPLETED,
             result=results
         )
         
+        # Save results to database
+        DatabaseService.update_test_status(
+            task_id,
+            'completed',
+            result=results
+        )
+        
     except Exception as e:
         logger.error(f"Error in async Playwright execution: {str(e)}")
+        
+        # Update task manager
         task_manager.update_task_status(
             task_id,
             TaskStatus.FAILED,
+            error=str(e)
+        )
+        
+        # Update database
+        DatabaseService.update_test_status(
+            task_id,
+            'failed',
             error=str(e)
         )
 
@@ -585,6 +621,52 @@ def get_playwright_results(task_id: str):
         
     except Exception as e:
         logger.error(f"Error getting Playwright results: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/bdd/executions', methods=['GET'])
+def get_all_executions():
+    """Get all test executions from database"""
+    try:
+        limit = request.args.get('limit', 50, type=int)
+        executions = DatabaseService.get_all_test_executions(limit=limit)
+        
+        return jsonify({
+            'success': True,
+            'count': len(executions),
+            'executions': executions
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting all executions: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/bdd/executions/<task_id>', methods=['GET'])
+def get_execution_by_id(task_id: str):
+    """Get specific test execution from database"""
+    try:
+        execution = DatabaseService.get_test_execution(task_id)
+        
+        if not execution:
+            return jsonify({
+                'success': False,
+                'error': 'Execution not found in database'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'execution': execution
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting execution: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
