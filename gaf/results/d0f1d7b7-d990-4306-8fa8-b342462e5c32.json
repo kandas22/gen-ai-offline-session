@@ -1,0 +1,323 @@
+{
+  "id": "d0f1d7b7-d990-4306-8fa8-b342462e5c32",
+  "type": "playwright_execute",
+  "status": "completed",
+  "created_at": "2025-11-30T10:15:20.595211",
+  "updated_at": "2025-11-30T10:15:22.065654",
+  "data": {
+    "test_id": "21a158aa",
+    "specification": {
+      "feature": {
+        "name": "MakePRD Help Documentation Validation",
+        "description": "Validate all documentation sections in the sidebar are present",
+        "tags": [
+          "@help-docs",
+          "@validation",
+          "@async"
+        ]
+      },
+      "scenarios": [
+        {
+          "scenario_id": "SC001",
+          "scenario_name": "Verify all sidebar navigation items exist",
+          "tags": [
+            "@smoke",
+            "@critical"
+          ],
+          "given": [
+            {
+              "step": "User navigates to help docs and waits for sidebar",
+              "url": "https://app.makeprd.ai/help-docs",
+              "wait_until": "networkidle",
+              "timeout": 60000,
+              "retries": 2
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "step": "Contents header should be visible",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Contents",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Quick Start Guide link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Quick Start Guide'), button:has-text('Quick Start Guide'), div:has-text('Quick Start Guide')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "AI Modes link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('AI Modes'), button:has-text('AI Modes'), div:has-text('AI Modes')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "PROMPT Blocks link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('PROMPT Blocks'), button:has-text('PROMPT Blocks'), div:has-text('PROMPT Blocks')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Table Outputs link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Table Outputs'), button:has-text('Table Outputs'), div:has-text('Table Outputs')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Credit System link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Credit System'), button:has-text('Credit System'), div:has-text('Credit System')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Subscription Plans link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Subscription Plans'), button:has-text('Subscription Plans'), div:has-text('Subscription Plans')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Managing Chats link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Managing Chats'), button:has-text('Managing Chats'), div:has-text('Managing Chats')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "User Interface link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('User Interface'), button:has-text('User Interface'), div:has-text('User Interface')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Account Settings link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Account Settings'), button:has-text('Account Settings'), div:has-text('Account Settings')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Best Practices link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Best Practices'), button:has-text('Best Practices'), div:has-text('Best Practices')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "FAQ link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('FAQ'), button:has-text('FAQ'), div:has-text('FAQ')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Troubleshooting link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Troubleshooting'), button:has-text('Troubleshooting'), div:has-text('Troubleshooting')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Keyboard Shortcuts link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Keyboard Shortcuts'), button:has-text('Keyboard Shortcuts'), div:has-text('Keyboard Shortcuts')",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Support & Contact link should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a:has-text('Support & Contact'), button:has-text('Support & Contact'), div:has-text('Support & Contact')",
+                "locator_type": "css"
+              }
+            }
+          ]
+        }
+      ],
+      "configuration": {
+        "base_url": "https://app.makeprd.ai",
+        "timeout": 60000,
+        "browser": "chromium",
+        "headless": false
+      }
+    }
+  },
+  "result": {
+    "feature": {
+      "name": "MakePRD Help Documentation Validation",
+      "description": "Validate all documentation sections in the sidebar are present",
+      "tags": [
+        "@help-docs",
+        "@validation",
+        "@async"
+      ]
+    },
+    "configuration": {
+      "base_url": "https://app.makeprd.ai",
+      "timeout": 60000,
+      "browser": "chromium",
+      "headless": false
+    },
+    "scenarios": [
+      {
+        "scenario_id": "SC001",
+        "scenario_name": "Verify all sidebar navigation items exist",
+        "tags": [
+          "@smoke",
+          "@critical"
+        ],
+        "status": "failed",
+        "steps": [
+          {
+            "step": "User navigates to help docs and waits for sidebar",
+            "type": "given",
+            "status": "passed",
+            "timestamp": "2025-11-30T10:15:21.222823",
+            "message": "Navigated to https://app.makeprd.ai/help-docs (attempt 1)"
+          },
+          {
+            "step": "Contents header should be visible",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.933673",
+            "message": "Element text=Contents does not exist"
+          },
+          {
+            "step": "Quick Start Guide link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.947365",
+            "message": "Element a:has-text('Quick Start Guide'), button:has-text('Quick Start Guide'), div:has-text('Quick Start Guide') does not exist"
+          },
+          {
+            "step": "AI Modes link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.950315",
+            "message": "Element a:has-text('AI Modes'), button:has-text('AI Modes'), div:has-text('AI Modes') does not exist"
+          },
+          {
+            "step": "PROMPT Blocks link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.951765",
+            "message": "Element a:has-text('PROMPT Blocks'), button:has-text('PROMPT Blocks'), div:has-text('PROMPT Blocks') does not exist"
+          },
+          {
+            "step": "Table Outputs link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.953092",
+            "message": "Element a:has-text('Table Outputs'), button:has-text('Table Outputs'), div:has-text('Table Outputs') does not exist"
+          },
+          {
+            "step": "Credit System link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.954175",
+            "message": "Element a:has-text('Credit System'), button:has-text('Credit System'), div:has-text('Credit System') does not exist"
+          },
+          {
+            "step": "Subscription Plans link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.955315",
+            "message": "Element a:has-text('Subscription Plans'), button:has-text('Subscription Plans'), div:has-text('Subscription Plans') does not exist"
+          },
+          {
+            "step": "Managing Chats link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.956565",
+            "message": "Element a:has-text('Managing Chats'), button:has-text('Managing Chats'), div:has-text('Managing Chats') does not exist"
+          },
+          {
+            "step": "User Interface link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.957556",
+            "message": "Element a:has-text('User Interface'), button:has-text('User Interface'), div:has-text('User Interface') does not exist"
+          },
+          {
+            "step": "Account Settings link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.958670",
+            "message": "Element a:has-text('Account Settings'), button:has-text('Account Settings'), div:has-text('Account Settings') does not exist"
+          },
+          {
+            "step": "Best Practices link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.959711",
+            "message": "Element a:has-text('Best Practices'), button:has-text('Best Practices'), div:has-text('Best Practices') does not exist"
+          },
+          {
+            "step": "FAQ link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.960667",
+            "message": "Element a:has-text('FAQ'), button:has-text('FAQ'), div:has-text('FAQ') does not exist"
+          },
+          {
+            "step": "Troubleshooting link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.961543",
+            "message": "Element a:has-text('Troubleshooting'), button:has-text('Troubleshooting'), div:has-text('Troubleshooting') does not exist"
+          },
+          {
+            "step": "Keyboard Shortcuts link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.962620",
+            "message": "Element a:has-text('Keyboard Shortcuts'), button:has-text('Keyboard Shortcuts'), div:has-text('Keyboard Shortcuts') does not exist"
+          },
+          {
+            "step": "Support & Contact link should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:15:21.963856",
+            "message": "Element a:has-text('Support & Contact'), button:has-text('Support & Contact'), div:has-text('Support & Contact') does not exist"
+          }
+        ],
+        "start_time": "2025-11-30T10:15:21.222816",
+        "end_time": "2025-11-30T10:15:21.964884"
+      }
+    ],
+    "start_time": "2025-11-30T10:15:20.596083",
+    "status": "failed",
+    "summary": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "pass_rate": "0.00%"
+    },
+    "end_time": "2025-11-30T10:15:22.065412"
+  },
+  "error": null
+}

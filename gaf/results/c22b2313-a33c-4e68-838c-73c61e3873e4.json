@@ -1,0 +1,137 @@
+{
+  "id": "c22b2313-a33c-4e68-838c-73c61e3873e4",
+  "type": "playwright_execute",
+  "status": "completed",
+  "created_at": "2025-11-30T10:11:01.159187",
+  "updated_at": "2025-11-30T10:11:02.637933",
+  "data": {
+    "test_id": "3a263278",
+    "specification": {
+      "feature": {
+        "name": "MakePRD Help Docs - Debug Test",
+        "description": "Simple test to verify page loads and sidebar exists",
+        "tags": [
+          "@debug"
+        ]
+      },
+      "scenarios": [
+        {
+          "scenario_id": "DEBUG001",
+          "scenario_name": "Verify page loads with sidebar",
+          "tags": [
+            "@smoke"
+          ],
+          "given": [
+            {
+              "step": "Navigate to help docs",
+              "url": "https://app.makeprd.ai/help-docs",
+              "wait_until": "networkidle",
+              "timeout": 60000,
+              "retries": 1
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "step": "Page should have loaded",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "body",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Sidebar or navigation should exist",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "nav, aside, [role='navigation'], .sidebar",
+                "locator_type": "css"
+              }
+            },
+            {
+              "step": "Any link or button should exist on page",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "a, button",
+                "locator_type": "css"
+              }
+            }
+          ]
+        }
+      ],
+      "configuration": {
+        "base_url": "https://app.makeprd.ai",
+        "timeout": 60000,
+        "browser": "chromium",
+        "headless": false
+      }
+    }
+  },
+  "result": {
+    "feature": {
+      "name": "MakePRD Help Docs - Debug Test",
+      "description": "Simple test to verify page loads and sidebar exists",
+      "tags": [
+        "@debug"
+      ]
+    },
+    "configuration": {
+      "base_url": "https://app.makeprd.ai",
+      "timeout": 60000,
+      "browser": "chromium",
+      "headless": false
+    },
+    "scenarios": [
+      {
+        "scenario_id": "DEBUG001",
+        "scenario_name": "Verify page loads with sidebar",
+        "tags": [
+          "@smoke"
+        ],
+        "status": "failed",
+        "steps": [
+          {
+            "step": "Navigate to help docs",
+            "type": "given",
+            "status": "passed",
+            "timestamp": "2025-11-30T10:11:01.764946",
+            "message": "Navigated to https://app.makeprd.ai/help-docs (attempt 1)"
+          },
+          {
+            "step": "Page should have loaded",
+            "type": "then",
+            "status": "passed",
+            "timestamp": "2025-11-30T10:11:02.511953",
+            "message": "Element body exists (count: 1)"
+          },
+          {
+            "step": "Sidebar or navigation should exist",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:11:02.526226",
+            "message": "Element nav, aside, [role='navigation'], .sidebar does not exist"
+          },
+          {
+            "step": "Any link or button should exist on page",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:11:02.529302",
+            "message": "Element a, button does not exist"
+          }
+        ],
+        "start_time": "2025-11-30T10:11:01.764939",
+        "end_time": "2025-11-30T10:11:02.530360"
+      }
+    ],
+    "start_time": "2025-11-30T10:11:01.159792",
+    "status": "failed",
+    "summary": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "pass_rate": "0.00%"
+    },
+    "end_time": "2025-11-30T10:11:02.637704"
+  },
+  "error": null
+}

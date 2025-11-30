@@ -1,0 +1,110 @@
+{
+  "data": {
+    "execution": {
+      "configuration": {
+        "base_url": "https://ennodaapp.makeprd.ai",
+        "browser": "chromium",
+        "headless": false,
+        "implicit_wait": 10,
+        "timeout": 30000
+      },
+      "end_time": "2025-11-30T09:48:01.959901",
+      "feature": {
+        "description": "User needs to verify all documentation sections are accessible and properly tagged",
+        "name": "MakePRD Help Documentation Navigation and Tag Validation",
+        "tags": [
+          "@help-docs",
+          "@e2e",
+          "@validation"
+        ]
+      },
+      "scenarios": [
+        {
+          "scenario_id": "SC001",
+          "scenario_name": "Verify all documentation sections are present",
+          "start_time": "2025-11-30T09:44:54.682363",
+          "status": "failed",
+          "steps": [
+            {
+              "error": "Page.goto: net::ERR_TIMED_OUT at https://ennodaapp.makeprd.ai/help-docs\nCall log:\n  - navigating to \"https://ennodaapp.makeprd.ai/help-docs\", waiting until \"domcontentloaded\"\n",
+              "message": "Error executing step: Page.goto: net::ERR_TIMED_OUT at https://ennodaapp.makeprd.ai/help-docs\nCall log:\n  - navigating to \"https://ennodaapp.makeprd.ai/help-docs\", waiting until \"domcontentloaded\"\n",
+              "status": "failed",
+              "step": "User navigates to MakePRD help documentation page",
+              "timestamp": "2025-11-30T09:44:54.682368",
+              "type": "given"
+            }
+          ],
+          "tags": [
+            "@smoke",
+            "@sections"
+          ]
+        },
+        {
+          "scenario_id": "SC002",
+          "scenario_name": "Verify navigation link functionality",
+          "start_time": "2025-11-30T09:45:57.445417",
+          "status": "failed",
+          "steps": [
+            {
+              "error": "Page.goto: net::ERR_TIMED_OUT at https://ennodaapp.makeprd.ai/help-docs\nCall log:\n  - navigating to \"https://ennodaapp.makeprd.ai/help-docs\", waiting until \"domcontentloaded\"\n",
+              "message": "Error executing step: Page.goto: net::ERR_TIMED_OUT at https://ennodaapp.makeprd.ai/help-docs\nCall log:\n  - navigating to \"https://ennodaapp.makeprd.ai/help-docs\", waiting until \"domcontentloaded\"\n",
+              "status": "failed",
+              "step": "User is on help documentation page",
+              "timestamp": "2025-11-30T09:45:57.445437",
+              "type": "given"
+            }
+          ],
+          "tags": [
+            "@navigation",
+            "@functional"
+          ]
+        },
+        {
+          "scenario_id": "SC003",
+          "scenario_name": "Verify Support & Contact button functionality",
+          "start_time": "2025-11-30T09:46:59.663338",
+          "status": "failed",
+          "steps": [
+            {
+              "error": "Page.goto: net::ERR_TIMED_OUT at https://ennodaapp.makeprd.ai/help-docs\nCall log:\n  - navigating to \"https://ennodaapp.makeprd.ai/help-docs\", waiting until \"domcontentloaded\"\n",
+              "message": "Error executing step: Page.goto: net::ERR_TIMED_OUT at https://ennodaapp.makeprd.ai/help-docs\nCall log:\n  - navigating to \"https://ennodaapp.makeprd.ai/help-docs\", waiting until \"domcontentloaded\"\n",
+              "status": "failed",
+              "step": "User is on help documentation page",
+              "timestamp": "2025-11-30T09:46:59.663348",
+              "type": "given"
+            }
+          ],
+          "tags": [
+            "@support",
+            "@functional"
+          ]
+        }
+      ],
+      "start_time": "2025-11-30T09:44:53.062154",
+      "status": "failed",
+      "summary": {
+        "failed": 3,
+        "pass_rate": "0.00%",
+        "passed": 0,
+        "total": 3
+      }
+    },
+    "generation": {
+      "feature_content": "Feature: {'name': 'MakePRD Help Documentation Navigation and Tag Validation', 'description': 'User needs to verify all documentation sections are accessible and properly tagged', 'tags': ['@help-docs', '@e2e', '@validation']}\n  Auto-generated test\n\n\n\n\n  Scenario: Scenario 1\n\n    @smoke @sections\n\n\n\n\n  Scenario: Scenario 2\n\n    @navigation @functional\n\n\n\n\n  Scenario: Scenario 3\n\n    @support @functional\n\n\n",
+      "feature_file": "features/generated/generated_3b28184e.feature",
+      "feature_name": {
+        "description": "User needs to verify all documentation sections are accessible and properly tagged",
+        "name": "MakePRD Help Documentation Navigation and Tag Validation",
+        "tags": [
+          "@help-docs",
+          "@e2e",
+          "@validation"
+        ]
+      },
+      "has_background": false,
+      "scenarios_count": 3,
+      "test_id": "3b28184e"
+    }
+  },
+  "success": true
+}
