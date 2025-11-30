@@ -223,6 +223,112 @@ def generate_bdd():
         }), 500
 
 
+@app.route('/api/bdd/generate-and-execute', methods=['POST'])
+def generate_and_execute_playwright():
+    """
+    Generate BDD test and execute with Playwright in real-time
+    
+    Request body:
+    {
+        "specification": {
+            "feature": {...},
+            "scenarios": [...],
+            "configuration": {...}
+        },
+        "execute_immediately": true
+    }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'specification' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'specification is required'
+            }), 400
+        
+        specification = data['specification']
+        execute_immediately = data.get('execute_immediately', True)
+        
+        logger.info(f"Generating and executing Playwright test")
+        
+        # Generate BDD feature file first
+        result = generate_bdd_test(specification)
+        
+        # Execute with Playwright if requested
+        if execute_immediately:
+            from automation.playwright_executor import execute_amazon_test
+            
+            execution_result = execute_amazon_test(specification)
+            
+            return jsonify({
+                'success': True,
+                'data': {
+                    'generation': result,
+                    'execution': execution_result
+                }
+            }), 200
+        else:
+            return jsonify({
+                'success': True,
+                'data': {
+                    'generation': result,
+                    'message': 'Test generated. Call /api/bdd/execute-playwright to run it.'
+                }
+            }), 200
+        
+    except Exception as e:
+        logger.error(f"Error in generate-and-execute: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@app.route('/api/bdd/execute-playwright', methods=['POST'])
+def execute_playwright():
+    """
+    Execute Playwright test from specification
+    
+    Request body:
+    {
+        "specification": {
+            "feature": {...},
+            "scenarios": [...],
+            "configuration": {...}
+        }
+    }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data or 'specification' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'specification is required'
+            }), 400
+        
+        specification = data['specification']
+        
+        logger.info(f"Executing Playwright test")
+        
+        from automation.playwright_executor import execute_amazon_test
+        
+        execution_result = execute_amazon_test(specification)
+        
+        return jsonify({
+            'success': True,
+            'data': execution_result
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error executing Playwright test: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
 @app.route('/api/bdd/execute', methods=['POST'])
 def execute_bdd():
     """
