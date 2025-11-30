@@ -3,6 +3,7 @@ Flask API for Google Search Automation with BDD Testing
 """
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from flasgger import Swagger
 import threading
 import os
 from typing import Dict, Any
@@ -20,6 +21,59 @@ from database.service import DatabaseService
 app = Flask(__name__)
 CORS(app)
 
+# Swagger configuration
+swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": 'apispec',
+            "route": '/apispec.json',
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/api/docs"
+}
+
+swagger_template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "GAF - Google Automation Framework API",
+        "description": "Automated E2E testing with Playwright and BDD support",
+        "version": "1.0.0",
+        "contact": {
+            "name": "API Support",
+            "url": "https://github.com/your-repo"
+        }
+    },
+    "host": "localhost:5001",
+    "basePath": "/",
+    "schemes": ["http", "https"],
+    "tags": [
+        {
+            "name": "Health",
+            "description": "Health check endpoints"
+        },
+        {
+            "name": "BDD Tests",
+            "description": "BDD test generation and execution"
+        },
+        {
+            "name": "Playwright",
+            "description": "Playwright test execution"
+        },
+        {
+            "name": "Database",
+            "description": "Test execution database queries"
+        }
+    ]
+}
+
+# Initialize Swagger
+swagger = Swagger(app, config=swagger_config, template=swagger_template)
+
 # Setup logger
 logger = setup_logger(__name__)
 
@@ -29,7 +83,26 @@ Config.ensure_directories()
 
 @app.route('/', methods=['GET'])
 def health_check():
-    """Health check endpoint"""
+    """Health check endpoint
+    ---
+    tags:
+      - Health
+    responses:
+      200:
+        description: API is healthy
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+              example: healthy
+            service:
+              type: string
+              example: GAF Search Automation API
+            version:
+              type: string
+              example: 1.0.0
+    """
     return jsonify({
         'status': 'healthy',
         'service': 'GAF Search Automation API',
@@ -38,15 +111,49 @@ def health_check():
 
 
 @app.route('/api/docs', methods=['GET'])
-def api_docs():
-    """Serve API documentation (Swagger UI)"""
-    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'api-docs.html')
-
-
+@app.route('/apidocs/', methods=['GET'])
 @app.route('/swagger', methods=['GET'])
-def swagger():
-    """Serve API documentation (Swagger UI) - alias for /api/docs"""
-    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'api-docs.html')
+def api_docs():
+    """Serve Swagger UI for API documentation"""
+    swagger_html = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>GAF API Documentation</title>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+        <style>
+            body { margin: 0; padding: 0; }
+            .swagger-ui .topbar { background-color: #2c3e50; }
+        </style>
+    </head>
+    <body>
+        <div id="swagger-ui"></div>
+        <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+        <script>
+            window.onload = function() {
+                const ui = SwaggerUIBundle({
+                    url: "/apispec.json",
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIStandalonePreset
+                    ],
+                    plugins: [
+                        SwaggerUIBundle.plugins.DownloadUrl
+                    ],
+                    layout: "StandaloneLayout"
+                });
+                window.ui = ui;
+            };
+        </script>
+    </body>
+    </html>
+    """
+    return swagger_html
 
 
 @app.route('/openapi.yaml', methods=['GET'])
@@ -226,19 +333,93 @@ def generate_bdd():
 
 @app.route('/api/bdd/generate-and-execute', methods=['POST'])
 def generate_and_execute_playwright():
-    """
-    Generate BDD test and execute with Playwright in real-time
-    
-    Request body:
-    {
-        "specification": {
-            "feature": {...},
-            "scenarios": [...],
-            "configuration": {...}
-        },
-        "execute_immediately": true,
-        "async": false  // Set to true for async execution
-    }
+    """Generate BDD test and execute with Playwright
+    ---
+    tags:
+      - Playwright
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - specification
+          properties:
+            specification:
+              type: object
+              properties:
+                feature:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: "Login Test"
+                    description:
+                      type: string
+                      example: "Test user login functionality"
+                    tags:
+                      type: array
+                      items:
+                        type: string
+                      example: ["@login", "@smoke"]
+                scenarios:
+                  type: array
+                  items:
+                    type: object
+                configuration:
+                  type: object
+                  properties:
+                    browser:
+                      type: string
+                      example: "chromium"
+                    headless:
+                      type: boolean
+                      example: false
+                    timeout:
+                      type: integer
+                      example: 60000
+            async:
+              type: boolean
+              example: true
+              description: "Run test asynchronously"
+            execute_immediately:
+              type: boolean
+              example: true
+    responses:
+      200:
+        description: Test executed successfully (synchronous)
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            data:
+              type: object
+              properties:
+                generation:
+                  type: object
+                execution:
+                  type: object
+      202:
+        description: Test execution started (asynchronous)
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            data:
+              type: object
+              properties:
+                task_id:
+                  type: string
+                  example: "abc-123-def-456"
+                message:
+                  type: string
+      400:
+        description: Bad request
+      500:
+        description: Server error
     """
     try:
         data = request.get_json()
@@ -599,7 +780,60 @@ def _execute_playwright_async(task_id: str, specification: Dict[str, Any]):
 
 @app.route('/api/bdd/playwright/results/<task_id>', methods=['GET'])
 def get_playwright_results(task_id: str):
-    """Get Playwright test results by task ID"""
+    """Get Playwright test results by task ID
+    ---
+    tags:
+      - Playwright
+    parameters:
+      - name: task_id
+        in: path
+        type: string
+        required: true
+        description: Task ID returned from test execution
+    responses:
+      200:
+        description: Test results
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            task_id:
+              type: string
+            status:
+              type: string
+              enum: [pending, running, completed, failed]
+            result:
+              type: object
+              properties:
+                status:
+                  type: string
+                summary:
+                  type: object
+                  properties:
+                    total:
+                      type: integer
+                    passed:
+                      type: integer
+                    failed:
+                      type: integer
+                    pass_rate:
+                      type: string
+                scenarios:
+                  type: array
+                  items:
+                    type: object
+            error:
+              type: string
+            created_at:
+              type: string
+            updated_at:
+              type: string
+      404:
+        description: Task not found
+      500:
+        description: Server error
+    """
     try:
         task = task_manager.get_task(task_id)
         
@@ -629,7 +863,61 @@ def get_playwright_results(task_id: str):
 
 @app.route('/api/bdd/executions', methods=['GET'])
 def get_all_executions():
-    """Get all test executions from database"""
+    """Get all test executions from database
+    ---
+    tags:
+      - Database
+    parameters:
+      - name: limit
+        in: query
+        type: integer
+        default: 50
+        description: Maximum number of executions to return
+    responses:
+      200:
+        description: List of test executions
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            count:
+              type: integer
+            executions:
+              type: array
+              items:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                  test_id:
+                    type: string
+                  feature_name:
+                    type: string
+                  status:
+                    type: string
+                    enum: [pending, running, completed, failed]
+                  response_code:
+                    type: integer
+                  response_status:
+                    type: string
+                  pass_rate:
+                    type: string
+                  total_scenarios:
+                    type: integer
+                  passed_scenarios:
+                    type: integer
+                  failed_scenarios:
+                    type: integer
+                  created_at:
+                    type: string
+                    format: date-time
+                  end_time:
+                    type: string
+                    format: date-time
+      500:
+        description: Server error
+    """
     try:
         limit = request.args.get('limit', 50, type=int)
         executions = DatabaseService.get_all_test_executions(limit=limit)
@@ -650,7 +938,52 @@ def get_all_executions():
 
 @app.route('/api/bdd/executions/<task_id>', methods=['GET'])
 def get_execution_by_id(task_id: str):
-    """Get specific test execution from database"""
+    """Get specific test execution from database
+    ---
+    tags:
+      - Database
+    parameters:
+      - name: task_id
+        in: path
+        type: string
+        required: true
+        description: Task ID of the test execution
+    responses:
+      200:
+        description: Test execution details
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+            execution:
+              type: object
+              properties:
+                task_id:
+                  type: string
+                test_id:
+                  type: string
+                feature_name:
+                  type: string
+                status:
+                  type: string
+                result:
+                  type: object
+                error:
+                  type: string
+                response_code:
+                  type: integer
+                response_status:
+                  type: string
+                created_at:
+                  type: string
+                updated_at:
+                  type: string
+      404:
+        description: Execution not found
+      500:
+        description: Server error
+    """
     try:
         execution = DatabaseService.get_test_execution(task_id)
         
