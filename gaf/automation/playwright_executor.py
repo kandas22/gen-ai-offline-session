@@ -79,9 +79,30 @@ class PlaywrightAmazonExecutor:
             # Given steps
             if step_type == 'given':
                 if 'url' in step:
-                    await self.page.goto(step['url'])
-                    result['status'] = 'passed'
-                    result['message'] = f"Navigated to {step['url']}"
+                    url = step['url']
+                    wait_until = step.get('wait_until', 'domcontentloaded')  # domcontentloaded, load, networkidle
+                    timeout = step.get('timeout', 60000)  # 60 seconds default
+                    max_retries = step.get('retries', 2)  # Default 2 retries
+                    
+                    last_error = None
+                    for attempt in range(max_retries):
+                        try:
+                            logger.info(f"Attempting to navigate to {url} (attempt {attempt + 1}/{max_retries})")
+                            await self.page.goto(url, wait_until=wait_until, timeout=timeout)
+                            result['status'] = 'passed'
+                            result['message'] = f"Navigated to {url} (attempt {attempt + 1})"
+                            break  # Success, exit retry loop
+                        except Exception as e:
+                            last_error = e
+                            logger.warning(f"Navigation attempt {attempt + 1} failed: {str(e)}")
+                            if attempt < max_retries - 1:
+                                await asyncio.sleep(2)  # Wait 2 seconds before retry
+                            else:
+                                # All retries failed
+                                result['status'] = 'failed'
+                                result['error'] = str(last_error)
+                                result['message'] = f"Failed to navigate to {url} after {max_retries} attempts: {str(last_error)}"
+                                raise last_error  # Re-raise to stop scenario execution
                     
             # When steps
             elif step_type == 'when':
@@ -177,6 +198,18 @@ class PlaywrightAmazonExecutor:
                         else:
                             result['status'] = 'failed'
                             result['message'] = f"Text mismatch. Expected: {expected_text}, Got: {actual_text}"
+                            
+                elif validation_type == 'url_contains':
+                    expected_text = step.get('expected_text')
+                    current_url = self.page.url
+                    
+                    if expected_text:
+                        if expected_text in current_url:
+                            result['status'] = 'passed'
+                            result['message'] = f"URL contains '{expected_text}': {current_url}"
+                        else:
+                            result['status'] = 'failed'
+                            result['message'] = f"URL does not contain '{expected_text}'. Current URL: {current_url}"
                             
                 # If action is specified in then step (like navigate)
                 if 'action' in step:

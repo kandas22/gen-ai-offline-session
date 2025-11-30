@@ -1,0 +1,63 @@
+{
+    "specification": {
+        "feature": {
+            "name": "MakePRD Help Docs - Debug Test",
+            "description": "Simple test to verify page loads and sidebar exists",
+            "tags": [
+                "@debug"
+            ]
+        },
+        "scenarios": [
+            {
+                "scenario_id": "DEBUG001",
+                "scenario_name": "Verify page loads with sidebar",
+                "tags": [
+                    "@smoke"
+                ],
+                "given": [
+                    {
+                        "step": "Navigate to help docs",
+                        "url": "https://app.makeprd.ai/help-docs",
+                        "wait_until": "networkidle",
+                        "timeout": 60000,
+                        "retries": 1
+                    }
+                ],
+                "when": [],
+                "then": [
+                    {
+                        "step": "Page should have loaded",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "locator": "body",
+                            "locator_type": "css"
+                        }
+                    },
+                    {
+                        "step": "Sidebar or navigation should exist",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "locator": "nav, aside, [role='navigation'], .sidebar",
+                            "locator_type": "css"
+                        }
+                    },
+                    {
+                        "step": "Any link or button should exist on page",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "locator": "a, button",
+                            "locator_type": "css"
+                        }
+                    }
+                ]
+            }
+        ],
+        "configuration": {
+            "base_url": "https://app.makeprd.ai",
+            "timeout": 60000,
+            "browser": "chromium",
+            "headless": false
+        }
+    },
+    "async": true
+}

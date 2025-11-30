@@ -1,0 +1,269 @@
+{
+    "specification": {
+        "feature": {
+            "name": "MakePRD Help Documentation Navigation and Tag Validation",
+            "description": "User needs to verify all documentation sections are accessible and properly tagged",
+            "tags": [
+                "@help-docs",
+                "@e2e",
+                "@validation"
+            ]
+        },
+        "scenarios": [
+            {
+                "scenario_id": "SC001",
+                "scenario_name": "Verify all documentation sections are present",
+                "tags": [
+                    "@smoke",
+                    "@sections"
+                ],
+                "given": [
+                    {
+                        "step": "User navigates to MakePRD help documentation page",
+                        "url": "https://app.makeprd.ai/help-docs",
+                        "expected_state": "page_loaded",
+                        "wait_until": "domcontentloaded",
+                        "timeout": 60000,
+                        "retries": 2
+                    }
+                ],
+                "when": [],
+                "then": [
+                    {
+                        "step": "Contents section should be visible",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "section",
+                            "locator": "text=Contents",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Quick Start Guide section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Quick Start Guide",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "AI Modes section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=AI Modes",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "PROMPT Blocks section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=PROMPT Blocks",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Table Outputs section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Table Outputs",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Credit System section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Credit System",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Subscription Plans section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Subscription Plans",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Managing Chats section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Managing Chats",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "User Interface section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=User Interface",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Account Settings section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Account Settings",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Best Practices section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Best Practices",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "FAQ section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=FAQ",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Troubleshooting section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Troubleshooting",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Keyboard Shortcuts section should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Keyboard Shortcuts",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    },
+                    {
+                        "step": "Support & Contact button should be present",
+                        "validation_type": "element_exists",
+                        "element": {
+                            "type": "button",
+                            "locator": "text=Support & Contact",
+                            "locator_type": "playwright"
+                        },
+                        "expected_result": true
+                    }
+                ],
+                "test_data": {
+                    "expected_sections": 14
+                }
+            },
+            {
+                "scenario_id": "SC002",
+                "scenario_name": "Verify navigation link functionality",
+                "tags": [
+                    "@navigation",
+                    "@functional"
+                ],
+                "given": [
+                    {
+                        "step": "User is on help documentation page",
+                        "url": "https://app.makeprd.ai/help-docs",
+                        "wait_until": "domcontentloaded",
+                        "timeout": 60000,
+                        "retries": 2
+                    }
+                ],
+                "when": [
+                    {
+                        "step": "User clicks on Quick Start Guide link",
+                        "action": "click",
+                        "element": {
+                            "type": "link",
+                            "locator": "text=Quick Start Guide",
+                            "locator_type": "playwright"
+                        }
+                    }
+                ],
+                "then": [
+                    {
+                        "step": "URL should update with section anchor",
+                        "validation_type": "url_contains",
+                        "expected_text": "#quick-start",
+                        "expected_result": true
+                    }
+                ]
+            },
+            {
+                "scenario_id": "SC003",
+                "scenario_name": "Verify Support & Contact button functionality",
+                "tags": [
+                    "@support",
+                    "@functional"
+                ],
+                "given": [
+                    {
+                        "step": "User is on help documentation page",
+                        "url": "https://app.makeprd.ai/help-docs"
+                    }
+                ],
+                "when": [
+                    {
+                        "step": "User clicks on Support & Contact button",
+                        "action": "click",
+                        "element": {
+                            "type": "button",
+                            "locator": "text=Support & Contact",
+                            "locator_type": "playwright"
+                        }
+                    }
+                ],
+                "then": [
+                    {
+                        "step": "Support contact form or page should be visible",
+                        "validation_type": "element_visible",
+                        "element": {
+                            "type": "container",
+                            "locator": "[role='dialog'], .support-modal, .contact-form",
+                            "locator_type": "css"
+                        },
+                        "expected_result": "visible"
+                    }
+                ]
+            }
+        ],
+        "configuration": {
+            "base_url": "https://app.makeprd.ai",
+            "timeout": 30000,
+            "implicit_wait": 10,
+            "browser": "chromium",
+            "headless": false
+        }
+    }
+}

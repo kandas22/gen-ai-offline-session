@@ -235,7 +235,8 @@ def generate_and_execute_playwright():
             "scenarios": [...],
             "configuration": {...}
         },
-        "execute_immediately": true
+        "execute_immediately": true,
+        "async": false  // Set to true for async execution
     }
     """
     try:
@@ -249,25 +250,50 @@ def generate_and_execute_playwright():
         
         specification = data['specification']
         execute_immediately = data.get('execute_immediately', True)
+        run_async = data.get('async', False)
         
-        logger.info(f"Generating and executing Playwright test")
+        logger.info(f"Generating and executing Playwright test (async={run_async})")
         
         # Generate BDD feature file first
         result = generate_bdd_test(specification)
         
         # Execute with Playwright if requested
         if execute_immediately:
-            from automation.playwright_executor import execute_amazon_test
-            
-            execution_result = execute_amazon_test(specification)
-            
-            return jsonify({
-                'success': True,
-                'data': {
-                    'generation': result,
-                    'execution': execution_result
-                }
-            }), 200
+            if run_async:
+                # Run asynchronously - return task ID immediately
+                task_id = task_manager.create_task('playwright_execute', {
+                    'test_id': result['test_id'],
+                    'specification': specification
+                })
+                
+                thread = threading.Thread(
+                    target=_execute_playwright_async,
+                    args=(task_id, specification)
+                )
+                thread.daemon = True
+                thread.start()
+                
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'generation': result,
+                        'task_id': task_id,
+                        'message': 'Test execution started. Use /api/bdd/playwright/results/<task_id> to check status.'
+                    }
+                }), 202
+            else:
+                # Run synchronously (may timeout for long tests)
+                from automation.playwright_executor import execute_amazon_test
+                
+                execution_result = execute_amazon_test(specification)
+                
+                return jsonify({
+                    'success': True,
+                    'data': {
+                        'generation': result,
+                        'execution': execution_result
+                    }
+                }), 200
         else:
             return jsonify({
                 'success': True,
@@ -509,6 +535,60 @@ def _execute_bdd_async(task_id: str, test_id: str, feature_file: str):
             TaskStatus.FAILED,
             error=str(e)
         )
+
+
+def _execute_playwright_async(task_id: str, specification: Dict[str, Any]):
+    """Execute Playwright test in background"""
+    try:
+        task_manager.update_task_status(task_id, TaskStatus.RUNNING)
+        
+        from automation.playwright_executor import execute_amazon_test
+        
+        results = execute_amazon_test(specification)
+        
+        task_manager.update_task_status(
+            task_id,
+            TaskStatus.COMPLETED,
+            result=results
+        )
+        
+    except Exception as e:
+        logger.error(f"Error in async Playwright execution: {str(e)}")
+        task_manager.update_task_status(
+            task_id,
+            TaskStatus.FAILED,
+            error=str(e)
+        )
+
+
+@app.route('/api/bdd/playwright/results/<task_id>', methods=['GET'])
+def get_playwright_results(task_id: str):
+    """Get Playwright test results by task ID"""
+    try:
+        task = task_manager.get_task(task_id)
+        
+        if not task:
+            return jsonify({
+                'success': False,
+                'error': 'Task not found'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'task_id': task_id,
+            'status': task['status'],
+            'result': task.get('result'),
+            'error': task.get('error'),
+            'created_at': task['created_at'],
+            'updated_at': task['updated_at']
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting Playwright results: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 if __name__ == '__main__':

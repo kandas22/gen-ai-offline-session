@@ -1,0 +1,308 @@
+{
+  "id": "5a40bfeb-b131-433b-81e4-1b2e09d7b797",
+  "type": "playwright_execute",
+  "status": "completed",
+  "created_at": "2025-11-30T10:04:34.123284",
+  "updated_at": "2025-11-30T10:04:35.090439",
+  "data": {
+    "test_id": "3368a05d",
+    "specification": {
+      "feature": {
+        "name": "MakePRD Help Documentation Validation",
+        "description": "Validate all documentation sections, text, and icons are present",
+        "tags": [
+          "@help-docs",
+          "@validation",
+          "@async"
+        ]
+      },
+      "scenarios": [
+        {
+          "scenario_id": "SC001",
+          "scenario_name": "Verify Contents header and all sections exist",
+          "tags": [
+            "@smoke",
+            "@critical"
+          ],
+          "given": [
+            {
+              "step": "User navigates to help docs",
+              "url": "https://app.makeprd.ai/help-docs",
+              "wait_until": "domcontentloaded",
+              "timeout": 60000,
+              "retries": 2
+            }
+          ],
+          "when": [],
+          "then": [
+            {
+              "step": "Contents header should be visible",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Contents",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Quick Start Guide should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Quick Start Guide",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "AI Modes should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=AI Modes",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "PROMPT Blocks should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=PROMPT Blocks",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Table Outputs should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Table Outputs",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Credit System should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Credit System",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Subscription Plans should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Subscription Plans",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Managing Chats should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Managing Chats",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "User Interface should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=User Interface",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Account Settings should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Account Settings",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Best Practices should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Best Practices",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "FAQ should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=FAQ",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Troubleshooting should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Troubleshooting",
+                "locator_type": "playwright"
+              }
+            },
+            {
+              "step": "Keyboard Shortcuts should be present",
+              "validation_type": "element_exists",
+              "element": {
+                "locator": "text=Keyboard Shortcuts",
+                "locator_type": "playwright"
+              }
+            }
+          ]
+        }
+      ],
+      "configuration": {
+        "base_url": "https://app.makeprd.ai",
+        "timeout": 60000,
+        "browser": "chromium",
+        "headless": false
+      }
+    }
+  },
+  "result": {
+    "feature": {
+      "name": "MakePRD Help Documentation Validation",
+      "description": "Validate all documentation sections, text, and icons are present",
+      "tags": [
+        "@help-docs",
+        "@validation",
+        "@async"
+      ]
+    },
+    "configuration": {
+      "base_url": "https://app.makeprd.ai",
+      "timeout": 60000,
+      "browser": "chromium",
+      "headless": false
+    },
+    "scenarios": [
+      {
+        "scenario_id": "SC001",
+        "scenario_name": "Verify Contents header and all sections exist",
+        "tags": [
+          "@smoke",
+          "@critical"
+        ],
+        "status": "failed",
+        "steps": [
+          {
+            "step": "User navigates to help docs",
+            "type": "given",
+            "status": "passed",
+            "timestamp": "2025-11-30T10:04:34.750682",
+            "message": "Navigated to https://app.makeprd.ai/help-docs (attempt 1)"
+          },
+          {
+            "step": "Contents header should be visible",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.963957",
+            "message": "Element text=Contents does not exist"
+          },
+          {
+            "step": "Quick Start Guide should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.978572",
+            "message": "Element text=Quick Start Guide does not exist"
+          },
+          {
+            "step": "AI Modes should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.980004",
+            "message": "Element text=AI Modes does not exist"
+          },
+          {
+            "step": "PROMPT Blocks should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.981069",
+            "message": "Element text=PROMPT Blocks does not exist"
+          },
+          {
+            "step": "Table Outputs should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.982048",
+            "message": "Element text=Table Outputs does not exist"
+          },
+          {
+            "step": "Credit System should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.983040",
+            "message": "Element text=Credit System does not exist"
+          },
+          {
+            "step": "Subscription Plans should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.984006",
+            "message": "Element text=Subscription Plans does not exist"
+          },
+          {
+            "step": "Managing Chats should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.985173",
+            "message": "Element text=Managing Chats does not exist"
+          },
+          {
+            "step": "User Interface should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.986063",
+            "message": "Element text=User Interface does not exist"
+          },
+          {
+            "step": "Account Settings should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.987083",
+            "message": "Element text=Account Settings does not exist"
+          },
+          {
+            "step": "Best Practices should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.987955",
+            "message": "Element text=Best Practices does not exist"
+          },
+          {
+            "step": "FAQ should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.988709",
+            "message": "Element text=FAQ does not exist"
+          },
+          {
+            "step": "Troubleshooting should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.989425",
+            "message": "Element text=Troubleshooting does not exist"
+          },
+          {
+            "step": "Keyboard Shortcuts should be present",
+            "type": "then",
+            "status": "failed",
+            "timestamp": "2025-11-30T10:04:34.990139",
+            "message": "Element text=Keyboard Shortcuts does not exist"
+          }
+        ],
+        "start_time": "2025-11-30T10:04:34.750675",
+        "end_time": "2025-11-30T10:04:34.990939"
+      }
+    ],
+    "start_time": "2025-11-30T10:04:34.124125",
+    "status": "failed",
+    "summary": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "pass_rate": "0.00%"
+    },
+    "end_time": "2025-11-30T10:04:35.090206"
+  },
+  "error": null
+}
