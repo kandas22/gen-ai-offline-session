@@ -2,12 +2,20 @@
 Authentication handler using PyAutoGUI for 2FA bypass
 """
 import time
-import pyautogui
 from typing import Optional
 from config import Config
 from utils.logger import setup_logger
 
 logger = setup_logger(__name__)
+
+# Try to import pyautogui, but handle failure for headless environments
+try:
+    import pyautogui
+    PYAUTOGUI_AVAILABLE = True
+except (ImportError, KeyError):
+    # KeyError can happen if DISPLAY env var is missing
+    logger.warning("PyAutoGUI not available or no display detected. 2FA automation will be disabled.")
+    PYAUTOGUI_AVAILABLE = False
 
 
 class AuthHandler:
@@ -15,9 +23,15 @@ class AuthHandler:
     
     def __init__(self):
         """Initialize AuthHandler"""
-        pyautogui.PAUSE = Config.PYAUTOGUI_PAUSE
-        pyautogui.FAILSAFE = Config.PYAUTOGUI_FAILSAFE
-        logger.info("AuthHandler initialized")
+        if PYAUTOGUI_AVAILABLE:
+            try:
+                pyautogui.PAUSE = Config.PYAUTOGUI_PAUSE
+                pyautogui.FAILSAFE = Config.PYAUTOGUI_FAILSAFE
+                logger.info("AuthHandler initialized with PyAutoGUI")
+            except Exception as e:
+                logger.warning(f"Failed to configure PyAutoGUI: {e}")
+        else:
+            logger.info("AuthHandler initialized (Headless Mode)")
     
     def handle_google_login(self, page, email: Optional[str] = None, 
                            password: Optional[str] = None) -> bool:
@@ -100,6 +114,10 @@ class AuthHandler:
             x: X coordinate
             y: Y coordinate
         """
+        if not PYAUTOGUI_AVAILABLE:
+            logger.warning("PyAutoGUI not available, skipping click")
+            return
+
         try:
             logger.info(f"Clicking at position ({x}, {y})")
             pyautogui.click(x, y)
@@ -113,6 +131,10 @@ class AuthHandler:
         Args:
             text: Text to type
         """
+        if not PYAUTOGUI_AVAILABLE:
+            logger.warning("PyAutoGUI not available, skipping typing")
+            return
+
         try:
             logger.info(f"Typing text: {text[:20]}...")
             pyautogui.write(text)
@@ -126,6 +148,10 @@ class AuthHandler:
         Args:
             key: Key to press (e.g., 'enter', 'tab')
         """
+        if not PYAUTOGUI_AVAILABLE:
+            logger.warning("PyAutoGUI not available, skipping key press")
+            return
+
         try:
             logger.info(f"Pressing key: {key}")
             pyautogui.press(key)

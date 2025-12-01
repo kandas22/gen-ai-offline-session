@@ -21,6 +21,7 @@ from database.service import DatabaseService
 app = Flask(__name__)
 CORS(app)
 
+
 # Swagger configuration
 swagger_config = {
     "headers": [],

@@ -86,7 +86,41 @@ class TaskManager:
         Returns:
             Task data or None
         """
-        return self.tasks.get(task_id)
+        # First check in-memory cache
+        if task_id in self.tasks:
+            return self.tasks[task_id]
+        
+        # If not in memory, try to load from file
+        if self.load_task(task_id):
+            return self.tasks.get(task_id)
+        
+        # If not in file, try to load from database
+        try:
+            from database.service import DatabaseService
+            db_task = DatabaseService.get_test_execution(task_id)
+            if db_task:
+                # Convert database record to task format
+                task_data = {
+                    'id': db_task['task_id'],
+                    'type': 'playwright_test',
+                    'status': db_task['status'],
+                    'created_at': db_task['created_at'],
+                    'updated_at': db_task['updated_at'],
+                    'data': {
+                        'test_id': db_task.get('test_id'),
+                        'feature_name': db_task.get('feature_name')
+                    },
+                    'result': db_task.get('result'),
+                    'error': db_task.get('error')
+                }
+                # Cache it in memory
+                self.tasks[task_id] = task_data
+                return task_data
+        except Exception as e:
+            # If database lookup fails, just return None
+            pass
+        
+        return None
     
     def get_task_status(self, task_id: str) -> Optional[str]:
         """

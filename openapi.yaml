@@ -1,17 +1,26 @@
 openapi: 3.0.3
 info:
-  title: GAF Search Automation API
+  title: GAF Search Automation & E2E Testing API
   description: |
-    Flask API for Google Search Automation with BDD Testing support.
+    Flask API for Google Search Automation with BDD Testing and Playwright E2E Testing support.
     
     **Features:**
-    - SerpAPI-based Google search (no reCAPTCHA)
-    - Synchronous and asynchronous search endpoints
-    - BDD test generation and execution
-    - Auto-fix for failed tests
+    - 🔍 SerpAPI-based Google search (no reCAPTCHA)
+    - ⚡ Synchronous and asynchronous search endpoints
+    - 🧪 BDD test generation and execution
+    - 🎭 Playwright browser automation for E2E tests
+    - 🔧 Auto-fix for failed tests
+    - 💾 Database persistence for test executions
+    - 📊 Test execution history and reporting
     
     **Base URL:** `http://localhost:5001`
-  version: 1.0.0
+    
+    **Getting Started:**
+    1. Use `/api/search` for Google searches
+    2. Use `/api/bdd/generate-and-execute` for E2E tests
+    3. Use `/api/bdd/playwright/results/{task_id}` to get test results
+    4. Use `/api/bdd/executions` to view execution history
+  version: 2.0.0
   contact:
     name: API Support
 
@@ -28,6 +37,10 @@ tags:
     description: Google search operations
   - name: BDD
     description: BDD test generation and execution
+  - name: Playwright
+    description: Playwright browser automation and E2E testing
+  - name: Database
+    description: Database query endpoints for test execution history
 
 paths:
   /:
@@ -54,6 +67,51 @@ paths:
                   version:
                     type: string
                     example: 1.0.0
+
+  /api/docs:
+    get:
+      tags:
+        - Health
+      summary: API Documentation UI
+      description: Interactive API documentation using Swagger UI
+      operationId: apiDocs
+      responses:
+        '200':
+          description: HTML page with Swagger UI
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /swagger:
+    get:
+      tags:
+        - Health
+      summary: Swagger UI (alias)
+      description: Alternative endpoint for Swagger UI
+      operationId: swagger
+      responses:
+        '200':
+          description: HTML page with Swagger UI
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /openapi.yaml:
+    get:
+      tags:
+        - Health
+      summary: OpenAPI Specification
+      description: Get the OpenAPI specification in YAML format
+      operationId: openApiSpec
+      responses:
+        '200':
+          description: OpenAPI YAML specification
+          content:
+            text/yaml:
+              schema:
+                type: string
 
   /api/search/sync:
     post:
@@ -390,6 +448,249 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /api/bdd/generate-and-execute:
+    post:
+      tags:
+        - BDD
+        - Playwright
+      summary: Generate and execute Playwright test
+      description: Generate BDD test and execute with Playwright in one step
+      operationId: generateAndExecutePlaywright
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - specification
+              properties:
+                specification:
+                  type: object
+                  properties:
+                    feature:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: Login Test
+                        description:
+                          type: string
+                          example: Test user login functionality
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                          example: ["@login", "@smoke"]
+                    scenarios:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PlaywrightScenario'
+                    configuration:
+                      $ref: '#/components/schemas/PlaywrightConfiguration'
+                async:
+                  type: boolean
+                  description: Execute asynchronously (returns task_id)
+                  default: false
+      responses:
+        '200':
+          description: Test executed successfully (sync)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PlaywrightResult'
+        '202':
+          description: Test execution started (async)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  task_id:
+                    type: string
+                  message:
+                    type: string
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bdd/execute-playwright:
+    post:
+      tags:
+        - Playwright
+      summary: Execute Playwright test
+      description: Execute a Playwright test from specification
+      operationId: executePlaywright
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - specification
+              properties:
+                specification:
+                  type: object
+                  properties:
+                    feature:
+                      type: object
+                    scenarios:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PlaywrightScenario'
+                    configuration:
+                      $ref: '#/components/schemas/PlaywrightConfiguration'
+      responses:
+        '200':
+          description: Test executed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PlaywrightResult'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bdd/playwright/results/{task_id}:
+    get:
+      tags:
+        - Playwright
+      summary: Get Playwright test results
+      description: Retrieve Playwright test results by task ID
+      operationId: getPlaywrightResults
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          description: Task ID returned from test execution
+          schema:
+            type: string
+            example: abc123def456
+      responses:
+        '200':
+          description: Test results retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  task_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [pending, running, completed, failed]
+                  result:
+                    $ref: '#/components/schemas/PlaywrightResult'
+                  error:
+                    type: string
+                    nullable: true
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bdd/executions:
+    get:
+      tags:
+        - Database
+      summary: Get all test executions
+      description: Retrieve all test executions from database
+      operationId: getAllExecutions
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of executions to return
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 200
+      responses:
+        '200':
+          description: List of test executions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  executions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TestExecution'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/bdd/executions/{task_id}:
+    get:
+      tags:
+        - Database
+      summary: Get test execution by ID
+      description: Retrieve specific test execution from database
+      operationId: getExecutionById
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          description: Task ID of the test execution
+          schema:
+            type: string
+            example: abc123def456
+      responses:
+        '200':
+          description: Test execution details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  execution:
+                    $ref: '#/components/schemas/TestExecution'
+        '404':
+          description: Execution not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   schemas:
     SearchResult:
@@ -456,3 +757,215 @@ components:
         error:
           type: string
           example: An error occurred
+
+    PlaywrightConfiguration:
+      type: object
+      properties:
+        browser:
+          type: string
+          enum: [chromium, firefox, webkit]
+          default: chromium
+          example: chromium
+        headless:
+          type: boolean
+          default: true
+          example: true
+        timeout:
+          type: integer
+          description: Default timeout in milliseconds
+          default: 30000
+          example: 30000
+
+    PlaywrightScenario:
+      type: object
+      properties:
+        scenario_id:
+          type: string
+          example: scenario_001
+        scenario_name:
+          type: string
+          example: User login
+        tags:
+          type: array
+          items:
+            type: string
+          example: ["@smoke", "@login"]
+        given:
+          type: array
+          items:
+            type: object
+            properties:
+              step:
+                type: string
+              url:
+                type: string
+              wait_until:
+                type: string
+                enum: [load, domcontentloaded, networkidle]
+              timeout:
+                type: integer
+              retries:
+                type: integer
+        when:
+          type: array
+          items:
+            type: object
+            properties:
+              step:
+                type: string
+              action:
+                type: string
+                enum: [click, search, navigate, fill]
+              element:
+                type: object
+              search_term:
+                type: string
+        then:
+          type: array
+          items:
+            type: object
+            properties:
+              step:
+                type: string
+              validation_type:
+                type: string
+                enum: [element_visible, element_exists, text_content, url_contains, cart_items_count]
+              element:
+                type: object
+              expected_text:
+                type: string
+              expected_result:
+                type: string
+
+    PlaywrightResult:
+      type: object
+      properties:
+        feature:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+        configuration:
+          $ref: '#/components/schemas/PlaywrightConfiguration'
+        scenarios:
+          type: array
+          items:
+            type: object
+            properties:
+              scenario_id:
+                type: string
+              scenario_name:
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              status:
+                type: string
+                enum: [passed, failed, partial, pending]
+              steps:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    step:
+                      type: string
+                    type:
+                      type: string
+                      enum: [given, when, then]
+                    status:
+                      type: string
+                      enum: [passed, failed, pending]
+                    message:
+                      type: string
+                    error:
+                      type: string
+              start_time:
+                type: string
+                format: date-time
+              end_time:
+                type: string
+                format: date-time
+        summary:
+          type: object
+          properties:
+            total:
+              type: integer
+            passed:
+              type: integer
+            failed:
+              type: integer
+            pass_rate:
+              type: string
+        status:
+          type: string
+          enum: [passed, failed, partial]
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+
+    TestExecution:
+      type: object
+      properties:
+        task_id:
+          type: string
+          example: abc123def456
+        test_id:
+          type: string
+          example: test_abc123
+        feature_name:
+          type: string
+          example: Login Test
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+          example: completed
+        result:
+          type: object
+          nullable: true
+        error:
+          type: string
+          nullable: true
+        response_code:
+          type: integer
+          nullable: true
+          example: 200
+        response_status:
+          type: string
+          nullable: true
+          example: OK
+        total_scenarios:
+          type: integer
+          nullable: true
+          example: 5
+        passed_scenarios:
+          type: integer
+          nullable: true
+          example: 4
+        failed_scenarios:
+          type: integer
+          nullable: true
+          example: 1
+        pass_rate:
+          type: string
+          nullable: true
+          example: "80.00%"
+        start_time:
+          type: string
+          format: date-time
+          nullable: true
+        end_time:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time

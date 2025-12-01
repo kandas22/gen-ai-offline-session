@@ -50,6 +50,61 @@ class Config:
     SCREENSHOTS_DIR = os.getenv('SCREENSHOTS_DIR', 'screenshots')
     RESULTS_DIR = os.getenv('RESULTS_DIR', 'results')
     LOGS_DIR = os.getenv('LOGS_DIR', 'logs')
+
+    # Database Configuration
+    DATABASE_URL = os.getenv('DATABASE_URL')
+    
+    @classmethod
+    def get_database_url(cls):
+        """
+        Get database URL with IPv4 resolution to avoid Docker networking issues
+        """
+        url = cls.DATABASE_URL
+        if not url:
+            return None
+            
+        try:
+            # Parse the URL to extract hostname
+            # Format: postgresql://user:pass@host:port/dbname
+            # Use rsplit to handle passwords containing '@'
+            if '@' in url:
+                prefix, _, suffix = url.rpartition('@')
+                
+                host_part = suffix.split('/')[0]
+                if ':' in host_part:
+                    hostname = host_part.split(':')[0]
+                    port = host_part.split(':')[1]
+                else:
+                    hostname = host_part
+                    port = '5432'
+                
+                print(f"Resolving database host: {hostname}")
+                
+                # Resolve hostname to IPv4
+                import socket
+                try:
+                    # AF_INET forces IPv4
+                    addr_info = socket.getaddrinfo(hostname, port, socket.AF_INET)
+                    if addr_info:
+                        ip_address = addr_info[0][4][0]
+                        print(f"Resolved {hostname} to IPv4: {ip_address}")
+                        
+                        # Replace hostname with IP in the URL
+                        new_suffix = suffix.replace(hostname, ip_address, 1)
+                        return f"{prefix}@{new_suffix}"
+                except Exception as e:
+                    print(f"Warning: Failed to resolve database host {hostname} to IPv4: {e}")
+                    print("CRITICAL: Your database host appears to be IPv6-only.")
+                    print("Docker environments (like Render) often require IPv4.")
+                    print("Please update your DATABASE_URL to use the Supabase Connection Pooler:")
+                    print("1. Go to Supabase Dashboard -> Database -> Connection Pooling")
+                    print("2. Copy the 'Transaction' or 'Session' connection string")
+                    print("3. Update your DATABASE_URL environment variable")
+                    
+        except Exception as e:
+            print(f"Warning: Error parsing database URL: {e}")
+            
+        return url
     
     @classmethod
     def ensure_directories(cls):
